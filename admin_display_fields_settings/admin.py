@@ -15,7 +15,7 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
             )
         }
         js = (
-            "admin/js/jquery.js",
+            "js/jquery.js",
             "admin_display_fields_settings/admin/js/jquery-ui.min.js",
             "admin_display_fields_settings/admin/js/admin_display_fields_settings.js",
         )
