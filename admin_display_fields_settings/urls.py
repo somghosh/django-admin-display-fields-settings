@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
-from ajax import changeFormHandler
+from django.conf.urls import url
+from .ajax import changeFormHandler
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^change_form/$', changeFormHandler, name='changeFormHandler'),
-)
+]
