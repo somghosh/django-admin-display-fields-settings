@@ -44,19 +44,21 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
                 name = self.opts.get_field(field).verbose_name
             except FieldDoesNotExist:
 
-                if hasattr(self.model, field):
-                    if field == '__str__' or field == '__unicode__':
-                        name = self.model.__name__
-                    else:
-                        mth = getattr(self.model, field)
-                        if hasattr(mth, 'short_description'):
-                            name = getattr(mth, 'short_description')
-
-                elif isinstance(field, types.FunctionType):
+                if isinstance(field, types.FunctionType):
                     if hasattr(field, 'short_description'):
                         name = getattr(field, 'short_description')
                     else:
                         field = field.__name__
+                else:
+
+                    if hasattr(self.model, field):
+                        if field == '__str__' or field == '__unicode__':
+                            name = self.model.__name__
+                        else:
+                            mth = getattr(self.model, field)
+                            if hasattr(mth, 'short_description'):
+                                name = getattr(mth, 'short_description')
+
 
             if name is None:
                 name = field.replace('_', ' ')
@@ -83,23 +85,45 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
 
         fields_names = self.get_fields_names()
 
-        if len(list_display_sort) > 0 \
-                and isinstance(list_display_sort, list):
-            keyOrder = list_display_sort + \
-                       [field[0] for field in fields_names
-                        if field[0] not in list_display_sort]
+        keyOrder = []
+        if not list_display_sort:
+            for field in fields_names:
+                if isinstance(field[0], types.FunctionType):
+                    if hasattr(field[0], 'short_description'):
+                        name=getattr(field[0], 'short_description')
+                        keyOrder.append(name)
+                    else:
+                        keyOrder.append(field[1])
+                else:
+                    keyOrder.append(field[0])
         else:
-            keyOrder = [field[0] for field in fields_names]
+            if len(list_display_sort) > 0 \
+                and isinstance(list_display_sort, list):
+                    keyOrder = list_display_sort + \
+                            [key for key in keyOrder 
+                             if key not in list_display_sort]
 
-        fields = {
-            field[0]: {
+        fields = {}
+        for field in fields_names:
+            if isinstance(field[0], types.FunctionType):
+                if hasattr(field[0], 'short_description'):
+                    name=getattr(field[0], 'short_description')
+                else:
+                    name = field[1]
+                fields[name] = {
+                'label': name,
+                'required': False,
+                'class': 'forms.BooleanField'
+                }
+            else:
+                fields[field[0]] = {
                 'label': field[1],
                 'required': False,
                 'class': 'forms.BooleanField'
-            } for field in fields_names
-        }
+                }
 
         initial = {field: list_display.get(field, True) for field in fields.keys()}
+
         initial['sort_opts'] = ','.join(keyOrder)
 
         fields['sort_opts'] = {
@@ -121,11 +145,24 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
         changelist.
         """
 
-        response = list(self.list_display)
+#        response = []
+#        for field in list(self.list_display):
+#            if isinstance(field, types.FunctionType):
+#                if hasattr(field, 'short_description'):
+#                    name = getattr(field, 'short_description')
+#                    response.append(name)
+#                else:
+#                    field = field.__name__
+#                    name = field.replace('_', ' ')
+#                    response.append(name)
+#            else:
+#                response.append(field)
+        response = list(self.list_display) 
 
         settings = self.get_display_settings(request.user)
         list_display = settings.get('list_display')
         list_display_sort = settings.get('list_display_sort')
+        
 
         if len(list_display) > 0:
             for field in self.list_display:

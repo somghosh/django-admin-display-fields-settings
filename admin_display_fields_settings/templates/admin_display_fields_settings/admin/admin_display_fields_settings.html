@@ -6,7 +6,8 @@
             <h2>Select the fields to display</h2>
         </div>
         <form id="settings_display_column" method="post">
-            {% if form.errors %}
+					{% csrf_token %} 
+						{% if form.errors %}
                 <p class="errornote">
                 {% if form.errors|length == 1 %}
                     {% trans "Please correct the error below." %}
@@ -15,7 +16,7 @@
                 {% endif %}
                 </p>
                 {{ form.non_field_errors }}
-            {% endif %}
+						{% endif %}
 
             <fieldset class="module aligned">
                 {% for field in form %}
