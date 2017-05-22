@@ -6,6 +6,7 @@
             <h2>Select the fields to display</h2>
         </div>
         <form id="settings_display_column" method="post">
+            {% csrf_token %}
 						{% if form.errors %}
                 <p class="errornote">
                 {% if form.errors|length == 1 %}

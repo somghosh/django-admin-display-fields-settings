@@ -4,9 +4,11 @@ from utils import getAdminViewByUrl, deserialize_form
 from models import DisplaySettings
 from django.template.loader import render_to_string
 from settings import SELECTOR, INSERT_TYPE
+from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 
 
+@ensure_csrf_cookie
 def changeFormHandler(request):
 
     if not request.user.is_authenticated():
