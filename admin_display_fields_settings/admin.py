@@ -145,27 +145,31 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
         changelist.
         """
 
-#        response = []
-#        for field in list(self.list_display):
-#            if isinstance(field, types.FunctionType):
-#                if hasattr(field, 'short_description'):
-#                    name = getattr(field, 'short_description')
-#                    response.append(name)
-#                else:
-#                    field = field.__name__
-#                    name = field.replace('_', ' ')
-#                    response.append(name)
-#            else:
-#                response.append(field)
-        response = list(self.list_display) 
+#        response = list(self.list_display):
+        response = []
+        for field in list(self.list_display):
+            if isinstance(field, types.FunctionType):
+                if hasattr(field, 'short_description'):
+                    name = getattr(field, 'short_description')
+                    response.append(name)
+                else:
+                    field = field.__name__
+                    name = field.replace('_', ' ')
+                    response.append(name)
+            else:
+                response.append(field)
+        print response
 
         settings = self.get_display_settings(request.user)
         list_display = settings.get('list_display')
         list_display_sort = settings.get('list_display_sort')
-        
+
+        print self.list_display
 
         if len(list_display) > 0:
-            for field in self.list_display:
+            #for field in self.list_display:
+            for field in tuple(response):
+                print field
                 if list_display.get(field) is False:
                     del response[response.index(field)]
 
@@ -177,7 +181,16 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
                     del response[response.index(field)]
 
             response = list_display_sort + response
+            new_response = []
+            for f in list(self.list_display):
+                if isinstance(f, types.FunctionType):
+                    name = getattr(f, 'short_description')
+                    if name in response:
+                        new_response.append(f)
+                else:
+                    if f in response:
+                        new_response.append(f)
 
-        self.list_editable = [field for field in self.list_editable if field in response]
+        self.list_editable = [field for field in self.list_editable if field in new_response]
 
-        return response
+        return new_response
