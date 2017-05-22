@@ -157,13 +157,10 @@ class DisplayFieldsSettingsAdmin(admin.ModelAdmin):
                     response.append(name)
             else:
                 response.append(field)
-        print response
 
         settings = self.get_display_settings(request.user)
         list_display = settings.get('list_display')
         list_display_sort = settings.get('list_display_sort')
-
-        print self.list_display
 
         if len(list_display) > 0:
             for field in tuple(response):
