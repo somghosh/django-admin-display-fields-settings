@@ -1,7 +1,9 @@
-from urlparse import urlparse
+
+from urllib.parse import urlparse
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
+from numpy import unicode
 
 
 def getAdminViewByUrl(url):
