@@ -1,9 +1,9 @@
 
 from urllib.parse import urlparse
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import QueryDict
-from numpy import unicode
+
 
 
 def getAdminViewByUrl(url):
@@ -35,4 +35,4 @@ def deserialize_form(data):
     """
     Create a new QueryDict from a serialized form.
     """
-    return QueryDict(query_string=unicode(data).encode('utf-8'))
+    return QueryDict(query_string=data.encode('utf-8'))
